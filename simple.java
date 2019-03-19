@@ -1,4 +1,4 @@
-﻿public class s0408 {
+﻿public class simple {
     public static void main(String[] args) {
         compare(3);
         compare(6);
