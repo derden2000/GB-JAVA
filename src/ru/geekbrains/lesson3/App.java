@@ -1,7 +1,9 @@
 package ru.geekbrains.lesson3;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class App {
     public static void main(String[] args) {
@@ -22,35 +24,32 @@ public class App {
         names[13] = "Саша";
         names[14] = "Петя";
 
-        Map<String,Integer> dict = new HashMap<>();
-        for (int i = 0; i < names.length; i++) {
-            dict.put(names[i], 0);
+        Set<String> namesSet = new HashSet<>();
+        for (String str : names) {
+            namesSet.add(str);
         }
-        for (Map.Entry<String, Integer> pair : dict.entrySet()) {
-            for (int i = 0; i < names.length; i++) {
-                if (names[i].equals(pair.getKey())) {
-                    dict.put(names[i], pair.getValue()+1);
+        System.out.println(namesSet);
+
+
+        Map<String, Integer> namesCount = new HashMap<>();
+        for (String str : names) {
+            int cnt = 0;
+            for (String str1 : names) {
+                if (str.equals(str1)) {
+                    cnt++;
                 }
             }
+            namesCount.put(str, cnt);
         }
-        System.out.print("Список уникальных слов: ");
-        for (Map.Entry<String, Integer> pair : dict.entrySet()) {
-            System.out.print(pair.getKey() + ", ");
-        }
-        System.out.println();
-        System.out.println("Количество повторений каждого слова:");
-        for (Map.Entry<String, Integer> pair : dict.entrySet()) {
-            System.out.println(pair.getKey() + " - " + pair.getValue());
-        }
+        System.out.println(namesCount);
 
-        PhoneBook simple = new PhoneBook();
-        //ключом делаем номера телефонов. Именно они уникальны, а не Фамилии
-        simple.add("111", "Иванов");
-        simple.add("000", "Иванов");
-        simple.add("222", "Иванов");
-        simple.add("333", "Петров");
-        simple.add("444", "Сидоров");
+        PhoneBook sample = new PhoneBook();
+        sample.add("Иванов", "111");
+        sample.add("Иванов", "222");
+        sample.add("Иванов", "000");
+        sample.add("Петров", "333");
+        sample.add("Сидоров", "444");
 
-        simple.get("Иванов");
+        System.out.println(sample.get("Иванов"));
     }
 }
