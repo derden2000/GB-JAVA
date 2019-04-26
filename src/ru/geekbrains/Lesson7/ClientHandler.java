@@ -1,5 +1,7 @@
 package ru.geekbrains.Lesson7;
 
+import ru.geekbrains.Lesson7.UI.TextMessage;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -30,15 +32,10 @@ public class ClientHandler {
                     try {
                         String msg = inp.readUTF();
                         System.out.printf("Message from user %s: %s%n", login, msg);
-
-                        // TODO проверить является ли msg сообщением для пользователя
-                        String[] msgParts = msg.split(" ");
-                        // TODO если да, то переслать это сообщение пользователю
-                        String userTo = msgParts[1];
-                        String message = msgParts[2];
-                        if (msgParts.length ==3 && userTo!=null)
-                        sendMessage(userTo, message);
-                        chatServer.sendMessage(userTo, login, message);
+                        TextMessage inText = StringHandler.strHandler(msg);
+                        if (inText.getUserTo()!=null) {
+                            chatServer.sendMessage(inText);
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                         break;
@@ -50,11 +47,7 @@ public class ClientHandler {
         this.handleThread.start();
     }
 
-    public String getLogin() {
-        return login;
-    }
-
-    public void sendMessage(String userTo, String msg) throws IOException {
-        out.writeUTF(String.format(MESSAGE_SEND_PATTERN, userTo, msg));
+    public void sendMessage(TextMessage message) throws IOException {
+        out.writeUTF(String.format(MESSAGE_SEND_PATTERN, message.getUserFrom(), message.getUserTo(), message.getText()));
     }
 }

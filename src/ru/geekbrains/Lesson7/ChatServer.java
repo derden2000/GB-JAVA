@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ru.geekbrains.Lesson7.UI.MessagePatterns.MESSAGE_SEND_PATTERN;
 
 public class ChatServer {
 
@@ -49,7 +48,6 @@ public class ChatServer {
                 if (user != null && authService.authUser(user)) {
                     System.out.printf("User %s authorized successful!%n", user.getLogin());
                     clientHandlerMap.put(user.getLogin(), new ClientHandler(user.getLogin(), socket, this));
-                    //clientHandlerMap.put("Pasha", new ClientHandler("Pasha", socket, this));
                     out.writeUTF("/auth successful");
                     out.flush();
                 } else {
@@ -75,14 +73,22 @@ public class ChatServer {
         return new User(authParts[1], authParts[2]);
     }
 
-    public void sendMessage(String userTo, String userFrom, String msg) throws IOException {
-        ClientHandler userToClientHandler = clientHandlerMap.get(userTo);
-        if (userToClientHandler != null) {
-            //TextMessage chatText = new TextMessage(userFrom, userTo, msg);
-            //String persText = String.format(MESSAGE_SEND_PATTERN, userFrom, msg);
-            userToClientHandler.sendMessage(userFrom, msg);
+    public void sendMessage(TextMessage message) throws IOException {
+        if (message.getUserTo().equals("All")){
+            for (Map.Entry<String, ClientHandler> pair: clientHandlerMap.entrySet()) {
+                ClientHandler userToClientHandler = pair.getValue();
+                userToClientHandler.sendMessage(message);
+            }
         }
-        // TODO убедиться, что userToClientHandler существует и отправить сообщение
-        // TODO для отправки сообщения нужно вызвать метод userToClientHandler.sendMessage()
+        else if (clientHandlerMap.containsKey(message.getUserTo())) {
+            ClientHandler userToClientHandler = clientHandlerMap.get(message.getUserTo());
+            userToClientHandler.sendMessage(message);
+        }
+        else {
+            ClientHandler userToClientHandler = clientHandlerMap.get(message.getUserFrom());
+            String error = String.format("Пользователя %s нет в сети", message.getUserTo());
+            TextMessage messageError = new TextMessage("Server", message.getUserFrom(), error);
+            userToClientHandler.sendMessage(messageError);
+        }
     }
 }

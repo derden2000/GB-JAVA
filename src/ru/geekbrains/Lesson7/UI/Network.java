@@ -1,5 +1,7 @@
 package ru.geekbrains.Lesson7.UI;
 
+import ru.geekbrains.Lesson7.StringHandler;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -33,17 +35,9 @@ public class Network {
                 while (true) {
                     try {
                         String text = in.readUTF();
-                        if (text != null && !text.trim().isEmpty()) {
-                            // TODO проверить, пришло ли в строке text сообщение
-                            // TODO определить текст и отправителя
-                            System.out.println(text);
-                            String[] textParts = text.split(" ");
-                            //if (textParts[1].equals(login)) {
-                                TextMessage textMessage = new TextMessage(textParts[1], "textParts[1]", textParts[2]);
-                                messageReciever.submitMessage(textMessage);
-                            //}
-                    }
-
+                        System.out.println(text);
+                        TextMessage textMessage = StringHandler.strHandler(text);
+                        if (textMessage!=null){ messageReciever.submitMessage(textMessage); }
                     } catch (IOException e) {
                         e.printStackTrace();
                         if (socket.isClosed()) {
@@ -71,7 +65,7 @@ public class Network {
     }
 
     public void sendTextMessage(TextMessage message) {
-        sendMessage(String.format(MESSAGE_SEND_PATTERN, message.getUserTo(), message.getText()));
+        sendMessage(String.format(MESSAGE_SEND_PATTERN, message.getUserFrom(), message.getUserTo(), message.getText()));
     }
 
     private void sendMessage(String msg) {

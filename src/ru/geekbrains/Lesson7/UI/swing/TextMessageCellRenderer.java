@@ -14,6 +14,8 @@ public class TextMessageCellRenderer extends JPanel implements ListCellRenderer<
 
     private final JLabel userName;
 
+    private final JLabel userToName;
+
     private final JTextArea messageText;
 
     private final JPanel panel;
@@ -24,11 +26,13 @@ public class TextMessageCellRenderer extends JPanel implements ListCellRenderer<
 
         created = new JLabel();
         userName = new JLabel();
+        userToName = new JLabel();
         messageText = new JTextArea();
         panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         panel.add(created);
         panel.add(userName);
+        panel.add(userToName);
 
         Font f = userName.getFont();
         userName.setFont(f.deriveFont(f.getStyle() | Font.BOLD));
@@ -39,6 +43,7 @@ public class TextMessageCellRenderer extends JPanel implements ListCellRenderer<
 
         add(panel, BorderLayout.NORTH);
         add(messageText, BorderLayout.SOUTH);
+
     }
 
     @Override
@@ -49,6 +54,7 @@ public class TextMessageCellRenderer extends JPanel implements ListCellRenderer<
         created.setText(value.getCreated().format(timeFormatter));
         userName.setOpaque(true);
         userName.setText(value.getUserFrom());
+        userToName.setText(value.getUserTo());
         messageText.setText(value.getText());
         return this;
     }

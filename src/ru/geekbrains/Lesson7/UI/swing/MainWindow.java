@@ -3,14 +3,12 @@ package ru.geekbrains.Lesson7.UI.swing;
 import ru.geekbrains.Lesson7.UI.MessageReciever;
 import ru.geekbrains.Lesson7.UI.Network;
 import ru.geekbrains.Lesson7.UI.TextMessage;
-import ru.geekbrains.Lesson7.User;
-import ru.geekbrains.Lesson7.auth.AuthServiceImpl;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Map;
+
 
 public class MainWindow extends JFrame implements MessageReciever {
 
@@ -32,10 +30,9 @@ public class MainWindow extends JFrame implements MessageReciever {
 
     private final Network network;
 
-    //private final Map<String, String> users;
 
     public MainWindow() {
-        setTitle(String.format("GB Window of julia"));
+        setTitle(String.format("GeekBrains"));
         setBounds(200,200, 500, 500);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -77,13 +74,10 @@ public class MainWindow extends JFrame implements MessageReciever {
         messageField = new JTextField();
         sendMessagePanel.add(messageField, BorderLayout.CENTER);
         userChoice = new JComboBox<>();
-        /*for (String  name : users.keySet()) {
-            userChoice.addItem(name);
-        }*/
         userChoice.addItem("ivan");
         userChoice.addItem("petr");
         userChoice.addItem("julia");
-        userChoice.addItem("Pasha");
+        userChoice.addItem("All");
         sendMessagePanel.add(userChoice, BorderLayout.WEST);
 
         add(sendMessagePanel, BorderLayout.SOUTH);
