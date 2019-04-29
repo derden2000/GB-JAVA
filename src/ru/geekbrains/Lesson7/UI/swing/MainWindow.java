@@ -5,9 +5,14 @@ import ru.geekbrains.Lesson7.UI.Network;
 import ru.geekbrains.Lesson7.UI.TextMessage;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
 
 
 public class MainWindow extends JFrame implements MessageReciever {
@@ -24,15 +29,19 @@ public class MainWindow extends JFrame implements MessageReciever {
 
     private final JButton sendButton;
 
-    private final JComboBox userChoice;
+    //private final JComboBox userChoice;
 
     private final JTextField messageField;
 
     private final Network network;
 
+    private final JList<String> userList;
+
+    private final DefaultListModel<String> userListModel;
+
 
     public MainWindow() {
-        setTitle(String.format("GeekBrains"));
+        setTitle(String.format("Сетевой чат"));
         setBounds(200,200, 500, 500);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
@@ -57,7 +66,7 @@ public class MainWindow extends JFrame implements MessageReciever {
             public void actionPerformed(ActionEvent e) {
                 String text = messageField.getText();
                 if (text != null && !text.trim().isEmpty()) {
-                    TextMessage msg = new TextMessage(network.getLogin(), userChoice.getSelectedItem().toString(), text);
+                    TextMessage msg = new TextMessage(network.getLogin(), userList.getSelectedValue()/*userChoice.getSelectedItem().toString()*/, text);
                     messageListModel.add(messageListModel.size(), msg);
                     messageField.setText(null);
                     network.sendTextMessage(msg);
@@ -73,12 +82,26 @@ public class MainWindow extends JFrame implements MessageReciever {
         sendMessagePanel.add(sendButton, BorderLayout.EAST);
         messageField = new JTextField();
         sendMessagePanel.add(messageField, BorderLayout.CENTER);
-        userChoice = new JComboBox<>();
+
+        userList = new JList<>();
+        userListModel = new DefaultListModel<>();
+        userList.setModel(userListModel);
+        userList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        userList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                Object element = userList.getSelectedValue();
+            }
+        });
+        userList.setPreferredSize(new Dimension(100, 0));
+        add(userList, BorderLayout.WEST);
+        
+        /*userChoice = new JComboBox<>();
         userChoice.addItem("ivan");
         userChoice.addItem("petr");
         userChoice.addItem("julia");
         userChoice.addItem("All");
-        sendMessagePanel.add(userChoice, BorderLayout.WEST);
+        sendMessagePanel.add(userChoice, BorderLayout.WEST);*/
 
         add(sendMessagePanel, BorderLayout.SOUTH);
         setVisible(true);
@@ -91,6 +114,19 @@ public class MainWindow extends JFrame implements MessageReciever {
         if (!loginDialog.isConnected()) {
             System.exit(0);
         }
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                if (network != null) {
+                    network.close();
+                }
+                super.windowClosing(e);
+            }
+        });
+
+        setTitle("Сетевой чат. Пользователь " + network.getLogin());
+
     }
 
     @Override
@@ -100,6 +136,46 @@ public class MainWindow extends JFrame implements MessageReciever {
             public void run() {
                 messageListModel.add(messageListModel.size(), message);
                 messageList.ensureIndexIsVisible(messageListModel.size() - 1);
+            }
+        });
+    }
+
+    @Override
+    public void userConnected(String login) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                int ix = userListModel.indexOf(login);
+                if (ix == -1) {
+                    userListModel.add(userListModel.size(), login.toLowerCase());
+                }
+            }
+        });
+    }
+
+    @Override
+    public void userDisconnected(String login) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                int ix = userListModel.indexOf(login);
+                if (ix >= 0) {
+                    userListModel.remove(ix);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void initClientsOnline(List<String> list) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (list.size()>0) {
+                    for (String user : list) {
+                        userListModel.addElement(user.toLowerCase());
+                    }
+                }
             }
         });
     }

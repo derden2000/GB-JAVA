@@ -7,7 +7,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import static ru.geekbrains.Lesson7.UI.MessagePatterns.MESSAGE_SEND_PATTERN;
+import static ru.geekbrains.Lesson7.UI.MessagePatterns.*;
 
 public class ClientHandler {
 
@@ -32,9 +32,19 @@ public class ClientHandler {
                     try {
                         String msg = inp.readUTF();
                         System.out.printf("Message from user %s: %s%n", login, msg);
-                        TextMessage inText = StringHandler.strHandler(msg);
-                        if (inText.getUserTo()!=null) {
-                            chatServer.sendMessage(inText);
+                        String[] text = msg.split(" ");
+                        if (text[0].equals(CONNECTED_USERS_REQUEST)) {
+                            chatServer.serverSendConnectedUserList(login);
+                        }
+                        else if (text[0].equals(DISCONNECT)) {
+                            //chatServer.serverSendDisconnectLogin(login);
+                            chatServer.unsubscribe(login);
+                        }
+                        else {
+                            TextMessage inText = StringHandler.parseMessage(msg);
+                            if (inText.getUserTo() != null) {
+                                chatServer.sendMessage(inText);
+                            }
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -49,5 +59,23 @@ public class ClientHandler {
 
     public void sendMessage(TextMessage message) throws IOException {
         out.writeUTF(String.format(MESSAGE_SEND_PATTERN, message.getUserFrom(), message.getUserTo(), message.getText()));
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void sendConnectedMessage(String login) throws IOException {
+        if (socket.isConnected()) {
+            out.writeUTF(String.format(CONNECTED_SEND, login));
+        }
+    }
+
+    public void sendConnectedUsersList(String toString) throws IOException {
+        out.writeUTF(String.format(CONNECTED_USERS_LIST_SEND, toString));
+    }
+
+    public void sendDisconnectedLogin(String login) throws IOException {
+        out.writeUTF(String.format(DISCONNECT_SEND, login));
     }
 }
