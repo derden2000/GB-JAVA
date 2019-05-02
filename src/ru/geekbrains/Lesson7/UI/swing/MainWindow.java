@@ -15,6 +15,7 @@ import java.awt.event.WindowEvent;
 import java.util.List;
 
 
+
 public class MainWindow extends JFrame implements MessageReciever {
 
     private final JList<TextMessage> messageList;
@@ -34,6 +35,7 @@ public class MainWindow extends JFrame implements MessageReciever {
     private final JTextField messageField;
 
     private final Network network;
+
 
     private final JList<String> userList;
 
@@ -126,6 +128,7 @@ public class MainWindow extends JFrame implements MessageReciever {
         });
 
         setTitle("Сетевой чат. Пользователь " + network.getLogin());
+
 
     }
 

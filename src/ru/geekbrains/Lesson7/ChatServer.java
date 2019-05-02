@@ -14,8 +14,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import static ru.geekbrains.Lesson7.UI.MessagePatterns.AUTH_FAIL_RESPONSE;
 import static ru.geekbrains.Lesson7.UI.MessagePatterns.AUTH_SUCCESS_RESPONSE;
+
 
 
 public class ChatServer {
@@ -54,6 +56,7 @@ public class ChatServer {
                     subcribe(user.getLogin(), socket);
                     //sendUserConnectedMessage(user.getLogin());
                     out.writeUTF(AUTH_SUCCESS_RESPONSE);
+
                     out.flush();
                 } else {
                     if (user != null) {
@@ -92,6 +95,7 @@ public class ChatServer {
             }
         }
     }
+
 
     private User checkAuthentication(String authMessage) throws AuthException {
         String[] authParts = authMessage.split(" ");

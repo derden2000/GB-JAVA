@@ -9,6 +9,7 @@ import java.net.Socket;
 
 import static ru.geekbrains.Lesson7.UI.MessagePatterns.*;
 
+
 public class ClientHandler {
 
     private final String login;
@@ -32,6 +33,7 @@ public class ClientHandler {
                     try {
                         String msg = inp.readUTF();
                         System.out.printf("Message from user %s: %s%n", login, msg);
+
                         String[] text = msg.split(" ");
                         if (text[0].equals(CONNECTED_USERS_REQUEST)) {
                             chatServer.serverSendConnectedUserList(login);

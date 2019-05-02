@@ -23,5 +23,3 @@ public final class MessagePatterns {
     public static final Pattern MESSAGE_REC_PATTERN = Pattern.compile("^/w (\\w+) (\\w+) (.+)", Pattern.MULTILINE);
 
 }
-
-

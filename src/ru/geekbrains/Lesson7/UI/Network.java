@@ -75,7 +75,6 @@ public class Network {
     }
 
 
-
     public void authorize(String login, String password) throws IOException, AuthException {
         socket = new Socket(hostName, port);
         out = new DataOutputStream(socket.getOutputStream());
