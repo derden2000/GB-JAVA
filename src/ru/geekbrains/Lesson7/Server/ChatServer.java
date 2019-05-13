@@ -1,31 +1,53 @@
-package ru.geekbrains.Lesson7;
+package ru.geekbrains.Lesson7.Server;
 
-import ru.geekbrains.Lesson7.UI.AuthException;
-import ru.geekbrains.Lesson7.UI.TextMessage;
-import ru.geekbrains.Lesson7.auth.AuthService;
-import ru.geekbrains.Lesson7.auth.AuthServiceImpl;
+import ru.geekbrains.Lesson7.Client.AuthException;
+import ru.geekbrains.Lesson7.Client.TextMessage;
+import ru.geekbrains.Lesson7.Server.auth.AuthService;
+import ru.geekbrains.Lesson7.Server.auth.AuthServiceJdbcImpl;
+import ru.geekbrains.Lesson7.Server.persistance.UserRepository;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 
-import static ru.geekbrains.Lesson7.UI.MessagePatterns.AUTH_FAIL_RESPONSE;
-import static ru.geekbrains.Lesson7.UI.MessagePatterns.AUTH_SUCCESS_RESPONSE;
-
+import static ru.geekbrains.Lesson7.Client.MessagePatterns.*;
 
 
 public class ChatServer {
 
-    private AuthService authService = new AuthServiceImpl();
+    private static Connection conn;
+
+    private static UserRepository userRepository;
+
+    private static AuthService authServiceJdbc;
+
     public static Map<String, ClientHandler> clientHandlerMap = Collections.synchronizedMap(new HashMap<>());
 
     public static void main(String[] args) {
+
+        try {
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/network_chat" +
+                            "?useUnicode=true" +
+                            "&useJDBCCompliantTimezoneShift=true" +
+                            "&useLegacyDatetimeCode=false" +
+                            "&serverTimezone=UTC",
+                    "root", "12345");
+            userRepository = new UserRepository(conn);
+            authServiceJdbc = new AuthServiceJdbcImpl(userRepository);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return;
+        }
+
         ChatServer chatServer = new ChatServer();
         chatServer.start(7777);
     }
@@ -42,21 +64,25 @@ public class ChatServer {
                 User user = null;
                 try {
                     String authMessage = inp.readUTF();
-                    user = checkAuthentication(authMessage);
-                } catch (IOException ex) {
+                    if (StringHandler.isReg(authMessage)) {
+                        UserRepository.insert(StringHandler.parseRegMessage(authMessage));
+                    }
+                    else {
+                        user = checkAuthentication(authMessage);
+                    }
+
+                } catch (IOException | SQLException ex) {
                     ex.printStackTrace();
                 } catch (AuthException ex) {
                     out.writeUTF(AUTH_FAIL_RESPONSE);
                     out.flush();
                     socket.close();
                 }
-                if (user != null && authService.authUser(user)) {
-                    System.out.printf("User %s authorized successful!%n", user.getLogin());
-                    //clientHandlerMap.put(user.getLogin(), new ClientHandler(user.getLogin(), socket, this));
-                    subcribe(user.getLogin(), socket);
-                    //sendUserConnectedMessage(user.getLogin());
-                    out.writeUTF(AUTH_SUCCESS_RESPONSE);
 
+                if (user != null && authServiceJdbc.authUser(user)) {
+                    System.out.printf("User %s authorized successful!%n", user.getLogin());
+                    subcribe(user.getLogin(), socket);
+                    out.writeUTF(AUTH_SUCCESS_RESPONSE);
                     out.flush();
                 } else {
                     if (user != null) {
@@ -97,13 +123,14 @@ public class ChatServer {
     }
 
 
-    private User checkAuthentication(String authMessage) throws AuthException {
+    private User checkAuthentication(String authMessage) throws AuthException, SQLException {
         String[] authParts = authMessage.split(" ");
         if (authParts.length != 3 || !authParts[0].equals("/auth")) {
             System.out.printf("Incorrect authorization message %s%n", authMessage);
             throw new AuthException();
+        } else {
+            return new User(authParts[1], authParts[2]);
         }
-        return new User(authParts[1], authParts[2]);
     }
 
     public void sendMessage(TextMessage message) throws IOException {

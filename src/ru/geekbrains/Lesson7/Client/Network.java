@@ -1,6 +1,6 @@
-package ru.geekbrains.Lesson7.UI;
+package ru.geekbrains.Lesson7.Client;
 
-import ru.geekbrains.Lesson7.StringHandler;
+import ru.geekbrains.Lesson7.Server.StringHandler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.geekbrains.Lesson7.UI.MessagePatterns.*;
+import static ru.geekbrains.Lesson7.Client.MessagePatterns.*;
 
 public class Network {
 
@@ -88,6 +88,15 @@ public class Network {
         } else {
             throw new AuthException();
         }
+    }
+
+    public void register (String login, String password) throws IOException {
+
+        socket = new Socket(hostName, port);
+        out = new DataOutputStream(socket.getOutputStream());
+        in = new DataInputStream(socket.getInputStream());
+
+        sendMessage(String.format(REG_PATTERN, login, password));
     }
 
     public void sendTextMessage(TextMessage message) {

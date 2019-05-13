@@ -1,7 +1,7 @@
-package ru.geekbrains.Lesson7.UI.swing;
+package ru.geekbrains.Lesson7.Client.swing;
 
-import ru.geekbrains.Lesson7.UI.AuthException;
-import ru.geekbrains.Lesson7.UI.Network;
+import ru.geekbrains.Lesson7.Client.AuthException;
+import ru.geekbrains.Lesson7.Client.Network;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;

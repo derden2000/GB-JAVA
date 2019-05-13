@@ -1,4 +1,4 @@
-package ru.geekbrains.Lesson7;
+package ru.geekbrains.Lesson7.Server;
 
 public class User {
 
@@ -16,5 +16,13 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                '}';
     }
 }

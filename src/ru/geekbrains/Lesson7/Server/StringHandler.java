@@ -1,13 +1,13 @@
-package ru.geekbrains.Lesson7;
+package ru.geekbrains.Lesson7.Server;
 
-import ru.geekbrains.Lesson7.UI.TextMessage;
+import ru.geekbrains.Lesson7.Client.TextMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import static ru.geekbrains.Lesson7.UI.MessagePatterns.*;
+import static ru.geekbrains.Lesson7.Client.MessagePatterns.*;
 
 public class StringHandler {
     public static TextMessage parseMessage(String msg) throws IOException {
@@ -46,6 +46,24 @@ public class StringHandler {
             return parts[1];
         } else {
             System.out.println("Unknown message pattern: " + text);
+            return null;
+        }
+    }
+
+    public static boolean isReg(String text) {
+        String[] parts = text.split(" ");
+        if (parts.length == 3 && parts[0].equals(REG_PREFIX)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static User parseRegMessage(String text) {
+        String[] parts = text.split(" ");
+        if (parts.length == 3 && parts[0].equals(REG_PREFIX)) {
+            return new User(parts[1], parts[2]);
+        } else {
             return null;
         }
     }

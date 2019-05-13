@@ -1,4 +1,4 @@
-package ru.geekbrains.Lesson7.UI.swing;
+package ru.geekbrains.Lesson7.Client.swing;
 
 import javax.swing.*;
 

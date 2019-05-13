@@ -1,12 +1,18 @@
-package ru.geekbrains.Lesson7.UI;
+package ru.geekbrains.Lesson7.Client;
 
 import java.util.regex.Pattern;
 
 public final class MessagePatterns {
 
+
     public static final String AUTH_PATTERN = "/auth %s %s";
     public static final String AUTH_SUCCESS_RESPONSE = "/auth successful";
     public static final String AUTH_FAIL_RESPONSE = "/auth fail";
+
+    public static final String REG_PREFIX = "/reg";
+    public static final String REG_PATTERN = "/reg %s %s";
+    public static final String REG_SUCCESS_RESPONSE = "/reg successful";
+    public static final String REG_FAIL_RESPONSE = "/reg fail";
 
 
     public static final String MESSAGE_PREFIX = "/w";

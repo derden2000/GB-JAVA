@@ -1,8 +1,8 @@
-package ru.geekbrains.Lesson7.UI.swing;
+package ru.geekbrains.Lesson7.Client.swing;
 
-import ru.geekbrains.Lesson7.UI.MessageReciever;
-import ru.geekbrains.Lesson7.UI.Network;
-import ru.geekbrains.Lesson7.UI.TextMessage;
+import ru.geekbrains.Lesson7.Client.MessageReciever;
+import ru.geekbrains.Lesson7.Client.Network;
+import ru.geekbrains.Lesson7.Client.TextMessage;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -30,12 +30,9 @@ public class MainWindow extends JFrame implements MessageReciever {
 
     private final JButton sendButton;
 
-    //private final JComboBox userChoice;
-
     private final JTextField messageField;
 
     private final Network network;
-
 
     private final JList<String> userList;
 
@@ -68,7 +65,7 @@ public class MainWindow extends JFrame implements MessageReciever {
             public void actionPerformed(ActionEvent e) {
                 String text = messageField.getText();
                 if (text != null && !text.trim().isEmpty()) {
-                    TextMessage msg = new TextMessage(network.getLogin(), userList.getSelectedValue()/*userChoice.getSelectedItem().toString()*/, text);
+                    TextMessage msg = new TextMessage(network.getLogin(), userList.getSelectedValue(), text);
                     messageListModel.add(messageListModel.size(), msg);
                     messageField.setText(null);
                     network.sendTextMessage(msg);
@@ -80,7 +77,7 @@ public class MainWindow extends JFrame implements MessageReciever {
                 }
             }
         });
-        //users = AuthServiceImpl.users;
+
         sendMessagePanel.add(sendButton, BorderLayout.EAST);
         messageField = new JTextField();
         sendMessagePanel.add(messageField, BorderLayout.CENTER);
@@ -97,24 +94,29 @@ public class MainWindow extends JFrame implements MessageReciever {
         });
         userList.setPreferredSize(new Dimension(100, 0));
         add(userList, BorderLayout.WEST);
-        
-        /*userChoice = new JComboBox<>();
-        userChoice.addItem("ivan");
-        userChoice.addItem("petr");
-        userChoice.addItem("julia");
-        userChoice.addItem("All");
-        sendMessagePanel.add(userChoice, BorderLayout.WEST);*/
 
         add(sendMessagePanel, BorderLayout.SOUTH);
         setVisible(true);
 
         this.network = new Network("localhost", 7777, this);
 
-        LoginDialog loginDialog = new LoginDialog(this, network);
-        loginDialog.setVisible(true);
+        ChooseDialog choose = new ChooseDialog(this);
+        choose.setVisible(true);
 
-        if (!loginDialog.isConnected()) {
-            System.exit(0);
+        if (!choose.getIsRegistered()) {
+            RegisterDialog regDialog = new RegisterDialog(this, network);
+            regDialog.setVisible(true);
+
+            if (!regDialog.isRegistered()) {
+                System.exit(0);
+            }
+        } else {
+            LoginDialog loginDialog = new LoginDialog(this, network);
+            loginDialog.setVisible(true);
+
+            if (!loginDialog.isConnected()) {
+                System.exit(0);
+            }
         }
 
         addWindowListener(new WindowAdapter() {

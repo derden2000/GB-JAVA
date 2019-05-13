@@ -1,6 +1,6 @@
-package ru.geekbrains.Lesson7.UI.swing;
+package ru.geekbrains.Lesson7.Client.swing;
 
-import ru.geekbrains.Lesson7.UI.TextMessage;
+import ru.geekbrains.Lesson7.Client.TextMessage;
 
 import javax.swing.*;
 import java.awt.*;

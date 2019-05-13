@@ -1,13 +1,13 @@
-package ru.geekbrains.Lesson7;
+package ru.geekbrains.Lesson7.Server;
 
-import ru.geekbrains.Lesson7.UI.TextMessage;
+import ru.geekbrains.Lesson7.Client.TextMessage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import static ru.geekbrains.Lesson7.UI.MessagePatterns.*;
+import static ru.geekbrains.Lesson7.Client.MessagePatterns.*;
 
 
 public class ClientHandler {
@@ -39,7 +39,6 @@ public class ClientHandler {
                             chatServer.serverSendConnectedUserList(login);
                         }
                         else if (text[0].equals(DISCONNECT)) {
-                            //chatServer.serverSendDisconnectLogin(login);
                             chatServer.unsubscribe(login);
                         }
                         else {
